@@ -7,7 +7,7 @@ For CSI-4107 Assignment 1
 import json
 
 
-def get_index(documents) -> dict:
+def build_index(documents) -> dict:
     """
     Generate inverted index from given documents
 
@@ -19,7 +19,7 @@ def get_index(documents) -> dict:
     return inverted_index
 
 
-def save_to_file(index):
+def save_index_tofile(index):
     """
     Save index to JSON file
 
@@ -29,7 +29,7 @@ def save_to_file(index):
     # TODO
 
 
-def load_from_file(filename):
+def load_index_fromfile(filename):
     """
     Load index from JSON file
 
