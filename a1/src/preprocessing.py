@@ -11,7 +11,7 @@ stop_words = set(stopwords.words('english'))
 stemmer = PorterStemmer()
 
 
-def tonkenize(doc):
+def tokenize(doc):
     return word_tokenize(doc.lower())
 
 
