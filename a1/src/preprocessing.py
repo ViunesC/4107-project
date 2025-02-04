@@ -24,7 +24,7 @@ def stem_tokens(doc):
 
 
 def preprocess_doc(doc):
-    doc = tonkenize(doc)
+    doc = tokenize(doc)
     doc = remove_stopwords(doc)
     doc = stem_tokens(doc)
     return doc
