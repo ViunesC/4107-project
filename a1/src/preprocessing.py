@@ -57,6 +57,12 @@ def preprocess_documents(documents):
     return preprocessed_docs
 
 
-def save_preprocessed_docs(docs, filename):
-    with open(filename, 'w', encoding='utf-8') as file:
+def save_preprocessed_docs(docs, file_name):
+    with open(file_name, 'w', encoding='utf-8') as file:
         json.dump(docs, file, indent=4, ensure_ascii=False)
+
+
+def load_preprocessed_docs(file_name):
+    with open(file_name, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    return data

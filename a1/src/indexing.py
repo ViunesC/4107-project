@@ -29,7 +29,7 @@ def build_index(documents) -> dict:
                 inverted_index[token][document_id] = 0
 
             # Increment the token count
-            inverted_index[token][document] += 1
+            inverted_index[token][document_id] += 1
 
     return inverted_index
 
