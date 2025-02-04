@@ -1,17 +1,21 @@
 from preprocessing import *
 import json
+import time
 
-print("Step 1 starts")
-doc_path ='./scifact/corpus.jsonl'
+print("Preprocessing documents...")
+start = time.time()
 
-#result file
+doc_path = '../scifact/corpus.jsonl'
+
+# result file
 documents = []
 
-#load file
+# load file
 with open(doc_path, "r", encoding="utf-8") as f:
     for line in f:
         doc_json = json.loads(line)
         documents.append(doc_json)
 
 documents = preprocess_documents(documents)
-print("Step 1 ends")
+end = time.time()
+print(f"Preprocessing completed. Time elapsed: {end - start} seconds.")
