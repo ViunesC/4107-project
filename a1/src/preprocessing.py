@@ -52,7 +52,7 @@ def preprocess_documents(documents):
         # out_file.write("\n")
 
     # Save the tokenized documents all at once
-    save_preprocessed_docs(preprocessed_docs, "preprocessed.jsonl")
+    save_preprocessed_docs(preprocessed_docs, "preprocessed_docs.jsonl")
 
     return preprocessed_docs
 
