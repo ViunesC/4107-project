@@ -66,3 +66,25 @@ def load_preprocessed_docs(file_name):
     with open(file_name, 'r', encoding='utf-8') as file:
         data = json.load(file)
     return data
+
+
+def preprocess_queries(queries):
+    preprocessed_queries = []
+    for query in queries:
+        id = query["_id"]
+        body_text = query["text"]
+        metadata = query["metadata"]
+
+        text_tokens = preprocess_doc(body_text)
+
+        new_query = {
+            "_id": id,
+            "text": text_tokens,
+            "metadata":metadata
+        }
+        preprocessed_queries.append(new_query)
+
+    # Save the tokenized queries
+    save_preprocessed_docs(preprocessed_queries, "preprocessed_queries.jsonl")
+
+    return preprocessed_queries
