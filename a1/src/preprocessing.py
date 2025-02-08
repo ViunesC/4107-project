@@ -3,6 +3,15 @@ import json
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
+import ssl
+
+#bypass SSL certificate verification
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
 
 nltk.download('punkt_tab')
 nltk.download('stopwords', quiet=True)
@@ -59,7 +68,8 @@ def preprocess_documents(documents):
 
 def save_preprocessed_docs(docs, file_name):
     with open(file_name, 'w', encoding='utf-8') as file:
-        json.dump(docs, file, indent=4, ensure_ascii=False)
+        for doc in docs:
+            file.write(json.dumps(doc, ensure_ascii=False) + "\n")
 
 
 def load_preprocessed_docs(file_name):
