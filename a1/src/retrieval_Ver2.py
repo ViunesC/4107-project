@@ -47,7 +47,6 @@ def load_docs(doc_file, use_full_text=True):
                 combined_tokens = title_tokens + text_tokens
             else:
                 combined_tokens = title_tokens
-            # 这里可以直接用 safe_join 拼接，也可以进一步预处理
             full_text = preprocess_text(safe_join(combined_tokens))
             docs[doc["_id"]] = full_text
     return docs
