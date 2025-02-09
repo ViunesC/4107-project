@@ -1,6 +1,5 @@
-# 4107-project
-Repo for CSI4107 2025W
-This project implements an Information Retrieval (IR) system based on the vector space model for a collection of scientific documents. The system processes a corpus and a set of test queries, builds an inverted index, and performs retrieval and ranking using a TF-IDF weighted vector space model with cosine similarity.
+# 4107 Assignment 1
+This assignment implements an Information Retrieval (IR) system based on the vector space model for a collection of scientific documents. The system processes a corpus and a set of test queries, builds an inverted index, and performs retrieval and ranking using a TF-IDF weighted vector space model with cosine similarity.
 
 Two different runs were executed:
 
@@ -8,25 +7,90 @@ Two different runs were executed:
 
 2. Title + Full Text: Documents are represented using the concatenation of the title and the full text.
 
-The results of both runs are evaluated with trec_eval.
+The results of both runs are evaluated with *trec_eval*.
 
-# Algorithms, Data Structures, and Optimizations Used
 
-**Tokenization and Text Cleaning:** We implemented a preprocessing function (preprocess_text) that converts the text to lowercase and removes punctuation using regular expressions. We also use a helper function (safe_join) to handle both list and string types safely.
 
-**Inverted Index**: Maps each token to a list of document IDs where the token appears, along with its term frequency.
+## Identification
 
-**Dictionary for Documents and Queries:** Each document is stored in a dictionary, mapping IDs to their processed text representation.
+Group 33: Yucheng Chen (300194614), Junyang Wang (300241369), Danning Chen (300234800)
 
-**Uniform Preprocessing:** Used hash tables for fast lookups and insertions.Stored TF directly in the index to avoid recalculating it during retrieval. Indexed documents incrementally, processing one document at a time to reduce memory consumption.
 
-**stopword**：Implemented stopword removal to eliminate frequent but non-informative words.
 
-**TF-IDF weighting + Cosine Similarity ranking**：Constructed using TfidfVectorizer from sklearn and Used it for efficient TF-IDF computation. Used to rank documents based on their similarity to the query. Constructed a global TF-IDF matrix to avoid redundant computations. Used NumPy operations for efficient similarity calculations and sorting.
+Task distribution:
 
-# First 10 Answers for the First 2 Queries
+| Name         | Responsibility                            |
+| ------------ | ----------------------------------------- |
+| Danning Chen | File parsing, Text preprocessing (Part I) |
+| Junyang Wang | Indexing (Part II), Document writing      |
+| Yucheng Chen | Retrieval and Ranking (Part III), Testing |
 
-**Query 0: "0-dimension biomateri lack induct properti."**
+
+
+## How to run
+
+1. Install [python 3.12 or above](https://www.python.org/downloads/)
+
+2. Install [NLTK](https://www.nltk.org/install.html):
+
+   For Linux/MacOS (might need to install pip first if not already do so):
+
+   ```
+   pip install --user -U nltk
+   ```
+
+   For Windows: Check out [here](https://pypi.org/project/nltk/)
+
+3. Install Scikit-learn:
+
+   ```
+   pip install -U scikit-learn
+   ```
+
+
+4. Install NLTK 'punkt_tab' and 'stopwords' data
+
+   Open python terminal and run following commands:
+
+   ```
+   >>> import nltk
+   >>> nltk.download('punkt_tab')
+   >>> nltk.download('stopwords', quiet=True)
+   ```
+
+5. Compile and run src/main.py
+
+
+
+**Note**
+
+The result of computing MAP with trec_eval are stored in *MAP_score.txt*. To compute MAP score yourself, check out this guide for installation and usage: https://aldolipani.com/trec_eval-installation-usage-and-behaviour/
+
+
+
+## Algorithms, Data Structures, and Optimizations Used
+
+1. **Tokenization and Text Cleaning:** We implemented a preprocessing function (preprocess_text) that converts the text to lowercase and removes punctuation using regular expressions. We also use a helper function (safe_join) to handle both list and string types safely.
+
+2. **Inverted Index**: Maps each token to a list of document IDs where the token appears, along with its term frequency ($$d_{f}$$ and $tf_i$).
+
+3. **Dictionary for Documents and Queries:** Each document is stored in a dictionary, mapping IDs to their processed text representation.
+
+4. **Uniform Preprocessing:** Used hash tables for fast lookups and insertions. Stored TF directly in the index to avoid recalculating it during retrieval. Indexed documents incrementally, processing one document at a time to reduce memory consumption.
+
+5. **Stop word:** Implemented stop word removal to eliminate frequent but non-informative words.
+
+6. **TF-IDF weighting + Cosine Similarity ranking: **We constructed our weighting based on following formula while using *TfidfVectorizer* from *Scikit-learn* for efficient TF-IDF computation. 
+   $$
+   w_{ij} = tf_{ij}*idf_i
+   $$
+   The weighting was used to rank documents based on their similarity to the query. Constructed a global TF-IDF matrix to avoid redundant computations and utilize *NumPy* operations for efficient similarity calculations and sorting.
+
+
+
+## First 10 Answers for the First 2 Queries
+
+#### Query 0: "0-dimension biomateri lack induct properti."
 
 0 Q0 42421723 1 0.1037 run_time
 
@@ -48,7 +112,9 @@ The results of both runs are evaluated with trec_eval.
 
 0 Q0 21257564 10 0.0669 run_time
 
-**Query 2: "1 in 5 million in uk have abnorm prp posit."**
+
+
+#### Query 2: "1 in 5 million in uk have abnorm prp posit."
 
 2 Q0 13734012 1 0.3156 run_time
 
@@ -70,17 +136,24 @@ The results of both runs are evaluated with trec_eval.
 
 2 Q0 3716075 10 0.1190 run_time
 
-# MAP
+
+
+## MAP-Score
 
 **We evaluated our system using trec_eval for two configurations:**
 
 1. Using only titles (Results_title_only.txt)
-   
-3. Using both titles and full text (Results_title_full.txt)
 
-**Title Only 0.3867**
+2. Using both titles and full text (Results_title_full.txt)
 
-**Title + Text 0.5430**
+
+
+| Configuration | Score  |
+| ------------- | ------ |
+| Title         | 0.3867 |
+| Title + Text  | 0.5430 |
+
+
 
 The increase in recall suggests that full-text queries provided more context, enabling better ranking of relevant documents. Precision at top 5 and top 10 documents also increased, meaning the top-ranked documents were more likely to be relevant.
 
@@ -147,6 +220,4 @@ P_100                 	all	0.0101
 P_200                 	all	0.0050
 P_500                 	all	0.0020
 P_1000                	all	0.0010
-
 ```
-
