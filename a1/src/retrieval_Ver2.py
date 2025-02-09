@@ -118,19 +118,19 @@ def search_with_index(corpus_file, query_file, index_file, output_file, use_full
     print(f"Saved results as {output_file}")
 
 
-if __name__ == "__main__":
-    search_with_index(
-        "preprocessed_docs.jsonl",
-        "preprocessed_queries.jsonl",
-        "inverted_index.json",
-        "Results_title_only.txt",
-        use_full_text=False
-    )
-
-    search_with_index(
-        "preprocessed_docs.jsonl",
-        "preprocessed_queries.jsonl",
-        "inverted_index.json",
-        "Results_title_full.txt",
-        use_full_text=True
-    )
+# if __name__ == "__main__":
+#     search_with_index(
+#         "preprocessed_docs.jsonl",
+#         "preprocessed_queries.jsonl",
+#         "inverted_index.json",
+#         "Results_title_only.txt",
+#         use_full_text=False
+#     )
+#
+#     search_with_index(
+#         "preprocessed_docs.jsonl",
+#         "preprocessed_queries.jsonl",
+#         "inverted_index.json",
+#         "Results_title_full.txt",
+#         use_full_text=True
+#     )
