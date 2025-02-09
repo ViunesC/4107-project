@@ -5,7 +5,7 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 import ssl
 
-#bypass SSL certificate verification
+# bypass SSL certificate verification
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
@@ -68,8 +68,9 @@ def preprocess_documents(documents):
 
 def save_preprocessed_docs(docs, file_name):
     with open(file_name, 'w', encoding='utf-8') as file:
-        for doc in docs:
-            file.write(json.dumps(doc, ensure_ascii=False) + "\n")
+        # for doc in docs:
+        # file.write(json.dumps(doc, ensure_ascii=False) + "\n")
+        json.dump(docs, file, indent=4, ensure_ascii=False)
 
 
 def load_preprocessed_docs(file_name):
@@ -90,7 +91,7 @@ def preprocess_queries(queries):
         new_query = {
             "_id": id,
             "text": text_tokens,
-            "metadata":metadata
+            "metadata": metadata
         }
         preprocessed_queries.append(new_query)
 

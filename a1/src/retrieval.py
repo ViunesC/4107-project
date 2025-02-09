@@ -1,5 +1,6 @@
 import json
 import numpy as np
+import preprocessing
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -38,27 +39,48 @@ def load_docs(doc_file, use_full_text=True):
     If it is False, only title is used.
     """
     docs = {}
-    with open(doc_file, "r") as f:
-        for line in f:
-            doc = json.loads(line)
-            title_tokens = doc.get("title", [])
-            text_tokens = doc.get("text", [])
-            if use_full_text:
-                combined_tokens = title_tokens + text_tokens
-            else:
-                combined_tokens = title_tokens
-            full_text = preprocess_text(safe_join(combined_tokens))
-            docs[doc["_id"]] = full_text
+
+    preprocessed_docs = preprocessing.load_preprocessed_docs(doc_file)
+    for doc in preprocessed_docs:
+        title_tokens = doc.get("title", [])
+        text_tokens = doc.get("text", [])
+
+        if use_full_text:
+            combined_tokens = title_tokens + text_tokens
+        else:
+            combined_tokens = title_tokens
+
+        full_text = preprocess_text(safe_join(combined_tokens))
+        docs[doc["_id"]] = full_text
+
+    # with open(doc_file, "r") as f:
+    #     for line in f:
+    #         doc = json.loads(line)
+    #         title_tokens = doc.get("title", [])
+    #         text_tokens = doc.get("text", [])
+    #         if use_full_text:
+    #             combined_tokens = title_tokens + text_tokens
+    #         else:
+    #             combined_tokens = title_tokens
+    #         full_text = preprocess_text(safe_join(combined_tokens))
+    #         docs[doc["_id"]] = full_text
     return docs
 
 
 def load_queries(query_file):
     queries = {}
-    with open(query_file, "r") as f:
-        for line in f:
-            query = json.loads(line)
-            query_text = preprocess_text(safe_join(query.get("text", [])))
-            queries[query["_id"]] = query_text
+
+    preprocessed_queries = preprocessing.load_preprocessed_docs(query_file)
+    for query in preprocessed_queries:
+        query_text = preprocess_text(safe_join(query.get("text", [])))
+        queries[query["_id"]] = query_text
+
+
+    # with open(query_file, "r") as f:
+    #     for line in f:
+    #         query = json.loads(line)
+    #         query_text = preprocess_text(safe_join(query.get("text", [])))
+    #         queries[query["_id"]] = query_text
     return queries
 
 
@@ -79,7 +101,7 @@ def search_with_index(corpus_file, query_file, index_file, output_file, use_full
     docs = load_docs(corpus_file, use_full_text=use_full_text)
     queries = load_queries(query_file)
 
-    #build TF-IDF model
+    # build TF-IDF model
     doc_ids = list(docs.keys())
     doc_texts = [docs[doc_id] for doc_id in doc_ids]
 
