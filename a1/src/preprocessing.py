@@ -13,8 +13,8 @@ except AttributeError:
 else:
     ssl._create_default_https_context = _create_unverified_https_context
 
-nltk.download('punkt_tab')
-nltk.download('stopwords', quiet=True)
+# nltk.download('punkt_tab')
+# nltk.download('stopwords', quiet=True)
 
 stop_words = set(stopwords.words('english'))
 stemmer = PorterStemmer()
