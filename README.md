@@ -83,3 +83,70 @@ The results of both runs are evaluated with trec_eval.
 **Title + Text 0.5430**
 
 The increase in recall suggests that full-text queries provided more context, enabling better ranking of relevant documents. Precision at top 5 and top 10 documents also increased, meaning the top-ranked documents were more likely to be relevant.
+
+```
+(base) yuchengchen@ChendeMacBook-Air src % trec_eval qrels.txt Results_title_only.txt
+runid                 	all	run_time
+num_q                 	all	300
+num_ret               	all	29929
+num_rel               	all	339
+num_rel_ret           	all	244
+map                   	all	0.3867
+gm_map                	all	0.0174
+Rprec                 	all	0.2947
+bpref                 	all	0.7058
+recip_rank            	all	0.4016
+iprec_at_recall_0.00  	all	0.4019
+iprec_at_recall_0.10  	all	0.4019
+iprec_at_recall_0.20  	all	0.4019
+iprec_at_recall_0.30  	all	0.3966
+iprec_at_recall_0.40  	all	0.3900
+iprec_at_recall_0.50  	all	0.3893
+iprec_at_recall_0.60  	all	0.3777
+iprec_at_recall_0.70  	all	0.3769
+iprec_at_recall_0.80  	all	0.3764
+iprec_at_recall_0.90  	all	0.3759
+iprec_at_recall_1.00  	all	0.3759
+P_5                   	all	0.1073
+P_10                  	all	0.0623
+P_15                  	all	0.0447
+P_20                  	all	0.0347
+P_30                  	all	0.0242
+P_100                 	all	0.0081
+P_200                 	all	0.0041
+P_500                 	all	0.0016
+P_1000                	all	0.0008
+(base) yuchengchen@ChendeMacBook-Air src % trec_eval qrels.txt Results_title_full.txt
+runid                 	all	run_time
+num_q                 	all	300
+num_ret               	all	29929
+num_rel               	all	339
+num_rel_ret           	all	303
+map                   	all	0.5430
+gm_map                	all	0.1339
+Rprec                 	all	0.4344
+bpref                 	all	0.8931
+recip_rank            	all	0.5567
+iprec_at_recall_0.00  	all	0.5568
+iprec_at_recall_0.10  	all	0.5568
+iprec_at_recall_0.20  	all	0.5568
+iprec_at_recall_0.30  	all	0.5559
+iprec_at_recall_0.40  	all	0.5475
+iprec_at_recall_0.50  	all	0.5475
+iprec_at_recall_0.60  	all	0.5355
+iprec_at_recall_0.70  	all	0.5328
+iprec_at_recall_0.80  	all	0.5318
+iprec_at_recall_0.90  	all	0.5312
+iprec_at_recall_1.00  	all	0.5312
+P_5                   	all	0.1473
+P_10                  	all	0.0823
+P_15                  	all	0.0576
+P_20                  	all	0.0443
+P_30                  	all	0.0313
+P_100                 	all	0.0101
+P_200                 	all	0.0050
+P_500                 	all	0.0020
+P_1000                	all	0.0010
+
+```
+
