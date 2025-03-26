@@ -4,6 +4,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 import ssl
+from collections import defaultdict
 
 # bypass SSL certificate verification
 try:
@@ -99,3 +100,47 @@ def preprocess_queries(queries):
     save_preprocessed_docs(preprocessed_queries, "preprocessed_queries.jsonl")
 
     return preprocessed_queries
+ 
+# Preprocess for bert
+def preprocess_bert(file_name):
+    with open("preprocessed_docs.jsonl", "r", encoding="utf-8") as f:
+        raw_docs = json.load(f)
+    doc_texts = {d["_id"]: " ".join(d["title"]) for d in raw_docs}
+
+    with open("preprocessed_queries.jsonl", "r", encoding="utf-8") as f:
+        raw_queries = json.load(f)
+    query_texts = {q["_id"]: " ".join(q["text"]) for q in raw_queries}
+
+    queries = set()
+    with open(file_name) as f:
+        for line in f:
+            query_id = line.split()[0]
+            queries.add(query_id)
+
+    query_ids = sorted(queries, key=lambda x: int(x))
+
+    query_to_docs = defaultdict(list)
+
+    with open(file_name) as f:
+        for line in f:
+            parts = line.strip().split()
+            query_id = parts[0]
+            doc_id = parts[2]
+            query_to_docs[query_id].append(doc_id)
+
+    return doc_texts, query_texts, query_ids, query_to_docs
+
+    
+def preprocess_Doc2Vec():
+
+    with open("preprocessed_docs.json", "r", encoding="utf-8") as f:
+        docs = json.load(f)
+
+
+    with open("preprocessed_queries.json", "r", encoding="utf-8") as f:
+        queries = json.load(f)
+
+
+    doc_lookup = {doc["_id"]: doc["title"] for doc in docs}
+    query_lookup = {q["_id"]: q["text"] for q in queries}  
+    return   doc_lookup,query_lookup
