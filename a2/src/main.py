@@ -4,6 +4,8 @@ import retrieval
 import json
 import time
 from sentence_transformers import SentenceTransformer, util
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+import numpy as np
 
 # BERT
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -87,6 +89,86 @@ else :
     
     #Doc2Vec
     #doc_lookup["id"] = ["token","token"...] query_lookup["id"] = ["token","token"...]
-    doc_lookup,query_lookup = preprocessing.preprocess_Doc2Vec()
+    #doc_lookup,query_lookup = preprocessing.preprocess_Doc2Vec()
 
-    #Can use doc_lookup["id"] = ["token","token"...] to get doc token with doc id 
+    #Can use doc_lookup["id"] = ["token","token"...] to get doc token with doc id
+    print("Starting BERT-based neural re-ranking...")
+    doc_embeddings = {}
+    for doc_id, text in doc_joined.items():
+        doc_embeddings[doc_id] = model.encode(text)
+
+    query_embeddings = {}
+    for qid, text in query_joined.items():
+        query_embeddings[qid] = model.encode(text)
+
+    reranked_results = {}
+    for qid in query_ids:
+        candidates = doc_ids[qid]  # ["doc_id1", "doc_id2", ...]
+        q_embed = query_embeddings[qid]
+
+        # 计算相似度
+        scores = []
+        for doc_id in candidates:
+            d_embed = doc_embeddings[doc_id]
+            score = util.cos_sim(q_embed, d_embed).item()  # 余弦相似度
+            scores.append((doc_id, score))
+
+
+        scores.sort(key=lambda x: x[1], reverse=True)
+        reranked_results[qid] = scores
+
+
+    with open("Results_neural_rerank.txt", "w", encoding="utf-8") as fout:
+        for qid, doc_score_list in reranked_results.items():
+            for rank, (doc_id, score) in enumerate(doc_score_list, 1):
+                fout.write(f"{qid} Q0 {doc_id} {rank} {score:.4f} neural_run\n")
+
+    print("Neural re-ranking done. Results saved to Results_neural_rerank.txt")
+
+    #Doc2Vec
+    print("Starting Doc2Vec-based neural re-ranking...")
+    # 构建TaggedDocument列表用于Doc2Vec训练
+    tagged_docs = []
+    for doc_id, text in doc_joined.items():
+        tokens = text.split()
+        tagged_docs.append(TaggedDocument(words=tokens, tags=[doc_id]))
+
+    # 训练Doc2Vec模型
+    doc2vec_model = Doc2Vec(vector_size=100, window=5, min_count=2, workers=4, epochs=40)
+    doc2vec_model.build_vocab(tagged_docs)
+    doc2vec_model.train(tagged_docs, total_examples=doc2vec_model.corpus_count, epochs=doc2vec_model.epochs)
+
+    # 生成Doc2Vec嵌入
+    d2v_doc_embeddings = {}
+    for doc_id, text in doc_joined.items():
+        tokens = text.split()
+        d2v_doc_embeddings[doc_id] = doc2vec_model.infer_vector(tokens)
+
+    d2v_query_embeddings = {}
+    for qid, text in query_joined.items():
+        tokens = text.split()
+        d2v_query_embeddings[qid] = doc2vec_model.infer_vector(tokens)
+
+
+    # 定义余弦相似度函数
+    def cosine_sim(vec1, vec2):
+        return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2) + 1e-10)
+
+
+    d2v_reranked_results = {}
+    for qid in query_ids:
+        candidates = doc_ids[qid]
+        q_embed = d2v_query_embeddings[qid]
+        scores = []
+        for doc_id in candidates:
+            d_embed = d2v_doc_embeddings[doc_id]
+            score = cosine_sim(q_embed, d_embed)
+            scores.append((doc_id, score))
+        scores.sort(key=lambda x: x[1], reverse=True)
+        d2v_reranked_results[qid] = scores
+
+    with open("Results_neural_rerank_doc2vec.txt", "w", encoding="utf-8") as fout:
+        for qid, doc_score_list in d2v_reranked_results.items():
+            for rank, (doc_id, score) in enumerate(doc_score_list, 1):
+                fout.write(f"{qid} Q0 {doc_id} {rank} {score:.4f} neural_doc2vec\n")
+    print("Doc2Vec-based neural re-ranking done. Results saved to Results_neural_rerank_doc2vec.txt")
