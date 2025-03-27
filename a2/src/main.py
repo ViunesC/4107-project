@@ -10,10 +10,10 @@ import numpy as np
 # BERT
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-#True for a2. False for a1 
-flag = True 
+# True for a2. False for a1
+flag = True
 
-if not flag :
+if not flag:
     # Preprocess corpus and queries
     print("Preprocessing documents and queries...")
     start = time.time()
@@ -47,8 +47,7 @@ if not flag :
     end = time.time()
     print(f"Preprocessing completed. Time elapsed: {end - start} seconds.")
 
-
-    #     Indexing tokenized document
+    # Indexing tokenized document
     print("Indexing tokenized documents...")
     start = time.time()
 
@@ -61,8 +60,7 @@ if not flag :
     end = time.time()
     print(f"Indexing completed. Time elapsed: {end - start} seconds.")
 
-
-    #     Retrieve and rank the result
+    # Retrieve and rank the result
     retrieval.search_with_index(
         "preprocessed_docs.jsonl",
         "preprocessed_queries.jsonl",
@@ -72,26 +70,26 @@ if not flag :
     )
 
     retrieval.search_with_index(
-    "preprocessed_docs.jsonl",
-    "preprocessed_queries.jsonl",
-    "inverted_index.json",
-    "Results_title_full.txt",
-    use_full_text=True
-)
+        "preprocessed_docs.jsonl",
+        "preprocessed_queries.jsonl",
+        "inverted_index.json",
+        "Results_title_full.txt",
+        use_full_text=True
+    )
 
     print("Rank completed. Results have been stored in following files: ")
     print("Results_title_full.txt, Results_title_only.txt")
 
-else :
-    #BERT preprocessed data
-    #doc_joined {"id" : "string"} query_joined {"id" : "string"} query_ids {"id". "id"...} doc_ids {"query_id":["doc_id","doc_id"...]}
+else:
+    # BERT preprocessed data
+    # doc_joined {"id" : "string"} query_joined {"id" : "string"} query_ids {"id". "id"...} doc_ids {"query_id":["doc_id","doc_id"...]}
     doc_joined, query_joined, query_ids, doc_ids = preprocessing.preprocess_bert("Results_title_full.txt")
-    
-    #Doc2Vec
-    #doc_lookup["id"] = ["token","token"...] query_lookup["id"] = ["token","token"...]
-    #doc_lookup,query_lookup = preprocessing.preprocess_Doc2Vec()
 
-    #Can use doc_lookup["id"] = ["token","token"...] to get doc token with doc id
+    # Doc2Vec
+    # doc_lookup["id"] = ["token","token"...] query_lookup["id"] = ["token","token"...]
+    # doc_lookup,query_lookup = preprocessing.preprocess_Doc2Vec()
+
+    # Can use doc_lookup["id"] = ["token","token"...] to get doc token with doc id
     print("Starting BERT-based neural re-ranking...")
     doc_embeddings = {}
     for doc_id, text in doc_joined.items():
@@ -106,17 +104,15 @@ else :
         candidates = doc_ids[qid]  # ["doc_id1", "doc_id2", ...]
         q_embed = query_embeddings[qid]
 
-        # 计算相似度
+        # Calculate similarity
         scores = []
         for doc_id in candidates:
             d_embed = doc_embeddings[doc_id]
             score = util.cos_sim(q_embed, d_embed).item()  # 余弦相似度
             scores.append((doc_id, score))
 
-
         scores.sort(key=lambda x: x[1], reverse=True)
         reranked_results[qid] = scores
-
 
     with open("Results_neural_rerank.txt", "w", encoding="utf-8") as fout:
         for qid, doc_score_list in reranked_results.items():
@@ -125,7 +121,7 @@ else :
 
     print("Neural re-ranking done. Results saved to Results_neural_rerank.txt")
 
-    #Doc2Vec
+    # Doc2Vec
     print("Starting Doc2Vec-based neural re-ranking...")
     # 构建TaggedDocument列表用于Doc2Vec训练
     tagged_docs = []
@@ -150,7 +146,7 @@ else :
         d2v_query_embeddings[qid] = doc2vec_model.infer_vector(tokens)
 
 
-    # 定义余弦相似度函数
+    # Cosine Similarity
     def cosine_sim(vec1, vec2):
         return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2) + 1e-10)
 
