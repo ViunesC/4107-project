@@ -230,8 +230,7 @@ P_10                    all     0.0814
 ### Doc2Vec
 
 ```
-viunesc@DESKTOP-8H6BMQH:~/projects/4107-project/a2/src$ trec_eval qrels.txt Results_neural_rerank_doc2vec.txt -m map -m
-P.10
+viunesc@DESKTOP-8H6BMQH:~/projects/4107-project/a2/src$ trec_eval qrels.txt Results_neural_rerank_doc2vec.txt -m map -m P.10
 map                     all     0.4784
 P_10                    all     0.0690
 ```
