@@ -145,6 +145,8 @@ neural_run is result of using BERT model and neural_doc2vec is result of using D
 0 Q0 26025820 10 0.4236 neural_doc2vec
 
 
+
+
 #### Query 3: "1 in 5 million in uk have abnorm prp posit."
 
 3 Q0 15153602 1 0.4913 neural_run
@@ -192,6 +194,8 @@ neural_run is result of using BERT model and neural_doc2vec is result of using D
 3 Q0 1067605 11 0.4718 neural_doc2vec
 
 
+
+
 ## Evaluation
 
 **We evaluated our system using trec_eval for two configurations:**
@@ -213,6 +217,8 @@ neural_run is result of using BERT model and neural_doc2vec is result of using D
 
 The increase in MAP suggests that using BERT model to perform the task leads to better result, enabling better ranking of relevant documents. Precision at top 10 documents also increased, meaning the top-ranked documents were more likely to be relevant.
 
+
+
 ### BERT
 
 ```
@@ -220,6 +226,8 @@ viunesc@DESKTOP-8H6BMQH:~/projects/4107-project/a2/src$ trec_eval qrels.txt Resu
 map                     all     0.6329
 P_10                    all     0.0850
 ```
+
+
 
 ### Doc2Vec
 
