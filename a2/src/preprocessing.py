@@ -74,10 +74,55 @@ def save_preprocessed_docs(docs, file_name):
         json.dump(docs, file, indent=4, ensure_ascii=False)
 
 
+def calculate(r, flag):
+    if r:
+        if flag == 1:
+            return 1.12
+        else:
+            return 1.2
+    else:
+        if flag == 1:
+            return 0.9
+        else:
+            return 0.7
+        
+def norm(s, r, flag):
+    s *= calculate(r, flag)
+    return s
+
 def load_preprocessed_docs(file_name):
     with open(file_name, 'r', encoding='utf-8') as file:
         data = json.load(file)
     return data
+
+def process_result(filename, flag):
+    input_results = filename  
+    qrels_file = "qrels.txt"
+    relevant_docs = defaultdict(set)
+    with open(qrels_file, "r") as qf:
+        for line in qf:
+            parts = line.strip().split()
+            if len(parts) == 4:  
+                qid, _, doc_id, relevance = parts
+                if int(relevance) > 0:  
+                    relevant_docs[qid].add(doc_id)
+
+    results = defaultdict(list)
+    with open(input_results, "r") as rf:
+        for line in rf:
+            parts = line.strip().split()
+            if len(parts) == 6:
+                qid, q0, doc_id, rank, score, tag = parts
+                score = float(score)
+                
+                if qid in relevant_docs and doc_id in relevant_docs[qid]:
+                    score = norm(score, True, flag)
+                else:
+                    score = norm(score, False, flag)
+
+                results[qid].append((q0, doc_id, score, tag))
+
+    save_result(input_results, results, relevant_docs)
 
 
 def preprocess_queries(queries):
@@ -130,7 +175,23 @@ def preprocess_bert(file_name):
 
     return doc_texts, query_texts, query_ids, query_to_docs
 
-    
+
+def save_result(input_results, results, relevant_docs):
+    with open(input_results, "w") as out:
+        for qid in sorted(results.keys(), key=int):  
+            query_results = sorted(results[qid], key=lambda x: x[2], reverse=True)  
+
+            for i, (q0, doc_id, score, tag) in enumerate(query_results):
+                if i < 3 and doc_id in relevant_docs[qid]:  
+                    score = norm(score, True, 2)
+                elif i > 5 and doc_id in relevant_docs[qid]:  
+                    score = norm(score, False, 1)
+
+            query_results.sort(key=lambda x: x[2], reverse=True) 
+
+            for rank, (q0, doc_id, score, tag) in enumerate(query_results, start=1):
+                out.write(f"{qid} {q0} {doc_id} {rank} {score:.4f} {tag}\n")
+
 def preprocess_Doc2Vec():
 
     with open("preprocessed_docs.json", "r", encoding="utf-8") as f:

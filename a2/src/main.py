@@ -13,6 +13,9 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 # True for a2. False for a1
 flag = True
 
+# True for using BERT, False for using Doc2Vec
+is_bert = True
+
 if not flag:
     # Preprocess corpus and queries
     print("Preprocessing documents and queries...")
@@ -80,16 +83,11 @@ if not flag:
     print("Rank completed. Results have been stored in following files: ")
     print("Results_title_full.txt, Results_title_only.txt")
 
-else:
+elif is_bert:
     # BERT preprocessed data
     # doc_joined {"id" : "string"} query_joined {"id" : "string"} query_ids {"id". "id"...} doc_ids {"query_id":["doc_id","doc_id"...]}
     doc_joined, query_joined, query_ids, doc_ids = preprocessing.preprocess_bert("Results_title_full.txt")
 
-    # Doc2Vec
-    # doc_lookup["id"] = ["token","token"...] query_lookup["id"] = ["token","token"...]
-    # doc_lookup,query_lookup = preprocessing.preprocess_Doc2Vec()
-
-    # Can use doc_lookup["id"] = ["token","token"...] to get doc token with doc id
     print("Starting BERT-based neural re-ranking...")
     doc_embeddings = {}
     for doc_id, text in doc_joined.items():
@@ -120,21 +118,24 @@ else:
                 fout.write(f"{qid} Q0 {doc_id} {rank} {score:.4f} neural_run\n")
 
     print("Neural re-ranking done. Results saved to Results_neural_rerank.txt")
+    preprocessing.process_result("Results_neural_rerank.txt", 1)
+else:
+    doc_joined, query_joined, query_ids, doc_ids = preprocessing.preprocess_bert("Results_title_full.txt")
 
     # Doc2Vec
     print("Starting Doc2Vec-based neural re-ranking...")
-    # 构建TaggedDocument列表用于Doc2Vec训练
+
     tagged_docs = []
     for doc_id, text in doc_joined.items():
         tokens = text.split()
         tagged_docs.append(TaggedDocument(words=tokens, tags=[doc_id]))
 
-    # 训练Doc2Vec模型
+    # Training
     doc2vec_model = Doc2Vec(vector_size=100, window=5, min_count=2, workers=4, epochs=40)
     doc2vec_model.build_vocab(tagged_docs)
     doc2vec_model.train(tagged_docs, total_examples=doc2vec_model.corpus_count, epochs=doc2vec_model.epochs)
 
-    # 生成Doc2Vec嵌入
+    # Generate Doc2Vec embedding
     d2v_doc_embeddings = {}
     for doc_id, text in doc_joined.items():
         tokens = text.split()
@@ -167,4 +168,6 @@ else:
         for qid, doc_score_list in d2v_reranked_results.items():
             for rank, (doc_id, score) in enumerate(doc_score_list, 1):
                 fout.write(f"{qid} Q0 {doc_id} {rank} {score:.4f} neural_doc2vec\n")
+
     print("Doc2Vec-based neural re-ranking done. Results saved to Results_neural_rerank_doc2vec.txt")
+    preprocessing.process_result("Results_neural_rerank_doc2vec.txt", 2)

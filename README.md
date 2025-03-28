@@ -21,9 +21,9 @@ Task distribution:
 
 | Name         | Responsibility                            |
 | ------------ | ----------------------------------------- |
-| Danning Chen | Modifying pipeline to adapt to new model, Running experiment on BERT |
-| Yucheng Chen | Modifying preprocessing module to adapt to new model, Running experiment on Doc2Vec      |
-| Junyang Wang | Comparing results and calculate metrics using trec_eval, Report writing |
+| Danning Chen | Modifying retrieval and indexing module to adapt to new model, Building BERT pipeline |
+| Yucheng Chen | Modifying preprocessing module to adapt to new model, Building Doc2Vec pipeline |
+| Junyang Wang | Conducting experiments on two models, Calculate metrics using trec_eval, Report writing |
 
 
 
@@ -74,12 +74,6 @@ Task distribution:
 
 
 
-**Note**
-
-The result of computing MAP with trec_eval are stored in *MAP_score.txt*. To compute MAP score yourself, check out this guide for installation and usage: https://aldolipani.com/trec_eval-installation-usage-and-behaviour/
-
-
-
 ## Algorithms, Data Structures, and Optimizations Used
 
 1. **Tokenization and Text Cleaning:** We implemented a preprocessing function (preprocess_text) that converts the text to lowercase and removes punctuation using regular expressions. We also use a helper function (safe_join) to handle both list and string types safely.
@@ -98,7 +92,7 @@ The result of computing MAP with trec_eval are stored in *MAP_score.txt*. To com
    $$
    The weighting was used to rank documents based on their similarity to the query. Constructed a global TF-IDF matrix to avoid redundant computations and utilize *NumPy* operations for efficient similarity calculations and sorting.
 
-7. **Importing new model**: We imported *all-MiniLM-L6-v2*, a variant of BERT model from SentenceTransformer, and *doc2vec* from Gensim. 
+7. **Importing new model**: We imported *all-MiniLM-L6-v2*, a variant of BERT model (Based on MiniLM, smaller version of BERT) from SentenceTransformer, and *doc2vec* from Gensim. Then we trained them with exsiting scores by chunking documents, embedding chuncks using all-MiniLM-L6-v2, storing embeddings in vector db and getting top 100 documents based on similarity with query embedding.
 
 8. **Rerank**: Then, we used our system from a1 to produce initial results ("Results_title_full.txt"), then re-ranked them based on a new similarity score between the query and each selected document. The result was stored in "Results_neural_rerank.txt" (for BERT) and "Results_neural_rerank_doc2vec.txt" (for Doc2Vec). 
 
@@ -110,92 +104,92 @@ neural_run is result of using BERT model and neural_doc2vec is result of using D
 
 #### Query 0: "0-dimension biomateri lack induct properti."
 
-0 Q0 16541762 1 0.3943 neural_run
+0 Q0 16541762 1 0.3549 neural_run
 
-0 Q0 10786948 2 0.3832 neural_run
+0 Q0 10786948 2 0.3449 neural_run
 
-0 Q0 8185080 3 0.3413 neural_run
+0 Q0 8185080 3 0.3072 neural_run
 
-0 Q0 45364685 4 0.3188 neural_run
+0 Q0 45364685 4 0.2869 neural_run
 
-0 Q0 12156187 5 0.3081 neural_run
+0 Q0 12156187 5 0.2773 neural_run
 
-0 Q0 18953920 6 0.2934 neural_run
+0 Q0 18953920 6 0.2641 neural_run
 
-0 Q0 1944452 7 0.2778 neural_run
+0 Q0 1944452 7 0.2500 neural_run
 
-0 Q0 28249680 8 0.2750 neural_run
+0 Q0 28249680 8 0.2475 neural_run
 
-0 Q0 994800 9 0.2672 neural_run
+0 Q0 994800 9 0.2405 neural_run
 
-0 Q0 12824568 10 0.2533 neural_run
+0 Q0 12824568 10 0.2280 neural_run
 
-0 Q0 10582939 1 0.7279 neural_doc2vec
+0 Q0 19510470 1 0.5157 neural_doc2vec
 
-0 Q0 19510470 2 0.7070 neural_doc2vec
+0 Q0 10582939 2 0.5020 neural_doc2vec
 
-0 Q0 11335860 3 0.6592 neural_doc2vec
+0 Q0 11335860 3 0.4572 neural_doc2vec
 
-0 Q0 11390393 4 0.6468 neural_doc2vec
+0 Q0 26886351 4 0.4511 neural_doc2vec
 
-0 Q0 32001951 5 0.6395 neural_doc2vec
+0 Q0 35008773 5 0.4444 neural_doc2vec
 
-0 Q0 26886351 6 0.6315 neural_doc2vec
+0 Q0 32001951 6 0.4439 neural_doc2vec
 
-0 Q0 26025820 7 0.6194 neural_doc2vec
+0 Q0 2686003 7 0.4330 neural_doc2vec
 
-0 Q0 16532419 8 0.6123 neural_doc2vec
+0 Q0 16532419 8 0.4292 neural_doc2vec
 
-0 Q0 16541762 9 0.6035 neural_doc2vec
+0 Q0 11390393 9 0.4278 neural_doc2vec
 
-0 Q0 5372773 10 0.6027 neural_doc2vec
+0 Q0 26025820 10 0.4236 neural_doc2vec
 
 
 #### Query 3: "1 in 5 million in uk have abnorm prp posit."
 
-3 Q0 15153602 1 0.5460 neural_run
+3 Q0 15153602 1 0.4913 neural_run
 
-3 Q0 3672261 2 0.4873 neural_run
+3 Q0 14717500 2 0.4726 neural_run
 
-3 Q0 4632921 3 0.4822 neural_run
+3 Q0 3672261 3 0.4386 neural_run
 
-3 Q0 23389795 4 0.4684 neural_run
+3 Q0 4632921 4 0.4340 neural_run
 
-3 Q0 1544804 5 0.4473 neural_run
+3 Q0 23389795 5 0.4216 neural_run
 
-3 Q0 4378885 6 0.4403 neural_run
+3 Q0 1544804 6 0.4026 neural_run
 
-3 Q0 14729253 7 0.4354 neural_run
+3 Q0 4378885 7 0.3963 neural_run
 
-3 Q0 14019636 8 0.4282 neural_run
+3 Q0 14729253 8 0.3919 neural_run
 
-3 Q0 14717500 9 0.4220 neural_run
+3 Q0 14019636 9 0.3854 neural_run
 
-3 Q0 14376683 10 0.4068 neural_run
+3 Q0 14376683 10 0.3661 neural_run
 
-3 Q0 13519661 11 0.4010 neural_run
+3 Q0 13519661 11 0.3609 neural_run
 
-3 Q0 1544804 1 0.8202 neural_doc2vec
+3 Q0 14717500 1 0.8599 neural_doc2vec
 
-3 Q0 15153602 2 0.7784 neural_doc2vec
+3 Q0 1544804 2 0.5859 neural_doc2vec
 
-3 Q0 1067605 3 0.7446 neural_doc2vec
+3 Q0 15153602 3 0.5592 neural_doc2vec
 
-3 Q0 5650232 4 0.7346 neural_doc2vec
+3 Q0 13791788 4 0.5291 neural_doc2vec
 
-3 Q0 13791788 5 0.7321 neural_doc2vec
+3 Q0 13373629 5 0.5198 neural_doc2vec
 
-3 Q0 14717500 6 0.7292 neural_doc2vec
+3 Q0 5650232 6 0.5123 neural_doc2vec
 
-3 Q0 13373629 7 0.7137 neural_doc2vec
+3 Q0 11117679 7 0.5020 neural_doc2vec
 
-3 Q0 1631583 8 0.7063 neural_doc2vec
+3 Q0 10944947 8 0.5004 neural_doc2vec
 
-3 Q0 10944947 9 0.7048 neural_doc2vec
+3 Q0 4414547 9 0.4814 neural_doc2vec
 
-3 Q0 13949015 10 0.6671 neural_doc2vec
+3 Q0 2739854 10 0.4759 neural_doc2vec
 
-3 Q0 2739854 11 0.6654 neural_doc2vec
+3 Q0 1067605 11 0.4718 neural_doc2vec
 
 
 ## Evaluation
@@ -209,11 +203,11 @@ neural_run is result of using BERT model and neural_doc2vec is result of using D
 
 
 | Configuration | MAP Score | Precison@10 |
-| ------------- | ------ |---|
-| Title         | 0.3867 |0.0623|
-| Title + Text  | 0.5430 |0.0804|
-| Doc2Vec | 0.4784 |0.0690|
-| BERT | 0.6452 |0.0814|
+| ------------- | ------ | --- |
+| Title         | 0.3867 | 0.0623 |
+| Title + Text  | 0.5430 | 0.0804 |
+| Doc2Vec | 0.5625 | 0.0727 |
+| BERT | 0.6329 | 0.0850 |
 
 
 
@@ -223,14 +217,14 @@ The increase in MAP suggests that using BERT model to perform the task leads to 
 
 ```
 viunesc@DESKTOP-8H6BMQH:~/projects/4107-project/a2/src$ trec_eval qrels.txt Results_neural_rerank.txt -m map -m P.10
-map                     all     0.6452
-P_10                    all     0.0814
+map                     all     0.6329
+P_10                    all     0.0850
 ```
 
 ### Doc2Vec
 
 ```
 viunesc@DESKTOP-8H6BMQH:~/projects/4107-project/a2/src$ trec_eval qrels.txt Results_neural_rerank_doc2vec.txt -m map -m P.10
-map                     all     0.4784
-P_10                    all     0.0690
+map                     all     0.5625
+P_10                    all     0.0727
 ```
