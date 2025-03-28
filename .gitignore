@@ -1,2 +1,4 @@
 .idea
 a1/src/__pycache__/*
+a2/src/__pycache__/*
+.venv/*

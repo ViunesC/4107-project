@@ -108,7 +108,7 @@ else:
         scores = []
         for doc_id in candidates:
             d_embed = doc_embeddings[doc_id]
-            score = util.cos_sim(q_embed, d_embed).item()  # 余弦相似度
+            score = util.cos_sim(q_embed, d_embed).item()  # Cosine similarity
             scores.append((doc_id, score))
 
         scores.sort(key=lambda x: x[1], reverse=True)
