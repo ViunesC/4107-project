@@ -10,23 +10,6 @@ Two different runs were executed:
 The results of both runs are evaluated with *trec_eval*.
 
 
-
-## Identification
-
-Group 33: Yucheng Chen (300194614), Junyang Wang (300241369), Danning Chen (300234800)
-
-
-
-Task distribution:
-
-| Name         | Responsibility                            |
-| ------------ | ----------------------------------------- |
-| Danning Chen | Modifying retrieval and indexing module to adapt to new model, Building BERT pipeline |
-| Yucheng Chen | Modifying preprocessing module to adapt to new model, Building Doc2Vec pipeline |
-| Junyang Wang | Conducting experiments on two models, Calculate metrics using trec_eval, Report writing |
-
-
-
 ## How to run
 
 1. Install [python 3.12 or above](https://www.python.org/downloads/)
